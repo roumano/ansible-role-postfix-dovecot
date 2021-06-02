@@ -8,5 +8,6 @@
 - include: dovecot.yml
 - include: postfix.yml
 - include: sql.yml
+  when: sql
 - include: postgrey.yml
   when: postgrey
