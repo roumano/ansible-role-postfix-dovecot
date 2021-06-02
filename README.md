@@ -49,6 +49,7 @@ Note that to also enable POP3S, you need to add pop3 to the `dovecot_protocols` 
 * **dovecot_ssl** - determines whether or not SSL is enforced across all protocols. This defaults to `required`.
 For more information, read Dovecot's [SSL Configuration](http://wiki.dovecot.org/SSL/DovecotConfiguration) documentation.
 * **dovecot_listen** - a list of IP or host addresses where Dovecot listens for connections. This defaults to `*` (all IPv4) and '::' (all IPv6).
+* **dovecot_mail_plugins** - list of plugins to load. Plugins specific to IMPA, LDA, etc.
 * **dovecot_user** - specifiy the user for the dovecot service
 * **ldap** - specify ldap configuration to bind
   * **base** - LDAP base
@@ -95,6 +96,12 @@ _site.yml_
     dovecot_ssl_key: /etc/ssl/private/dovecot.pem
     postfix_ssl_cert: /etc/ssl/certs/postfix.pem
     postfix_ssl_key: /etc/ssl/private/postfix.pem
+    dovecot_mail_plugins:
+    - name: fts
+      value: solr
+    - name: fts_solr
+      value: url=http://localhost:8080/solr/ debug
+    solr: true
 
 ```
 
