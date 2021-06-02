@@ -13,6 +13,8 @@ dovecot_ssl: 'required'
 dovecot_listen:
 - '*'
 - '::'
+# Sql enable by default but can be disabled
+sql: true
 postfix_dovecot_mysql_password_scheme: 'SHA512-CRYPT'
 postfix_dovecot_mysql_host: '127.0.0.1'
 postfix_dovecot_mysql_db_name: 'servermail'

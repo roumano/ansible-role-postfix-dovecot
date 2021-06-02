@@ -5,6 +5,13 @@
     state: present
   notify: restart dovecot
 
+- name: DOVECOT | install mysql driver
+  apt:
+    pkg: dovecot-ldap
+    state: present
+  when: sql | bool
+  notify: restart dovecot
+
 - name: DOVECOT | ensure Dovecot is started and runs at startup
   service:
     name: dovecot
@@ -81,6 +88,7 @@
     owner: vmail
     group: dovecot
     mode: 0440
+  when: sql | bool
   notify: restart dovecot
 
 - name: DOVECOT | configure (10-master.conf)
@@ -108,4 +116,5 @@
     owner: vmail
     group: dovecot
     mode: 0440
+  when: sql | bool
   notify: restart dovecot

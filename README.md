@@ -14,6 +14,7 @@ it must be concatenated after the certificate in the same file.
 * **postfix_dovecot_mysql_password** - the password to the user that has permission to query the database on the SQL database server used for authentication.
 
 #### Optional Variables
+* **sql** - [true/false], default is true, disable mysql backend
 * **postfix_dovecot_mysql_host** - the FQDN or IP address to the MySQL server for authentication. This defaults to `127.0.0.1`.
 * **postfix_dovecot_mysql_db_name** - the database name on the MySQL server used for authentication. This defaults to `servermail`.
 * **postfix_dovecot_mysql_user** - the user that has permission to query the database on the MySQL server used for authentication. This defaults to `usermail`.
