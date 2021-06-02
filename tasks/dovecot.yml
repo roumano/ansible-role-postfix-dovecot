@@ -109,6 +109,16 @@
     mode: 0440
   notify: restart dovecot
 
+- name: DOVECOT | configure (dsync.conf)
+  template:
+    src: etc/dovecot/conf.d/30-dsync.conf.j2
+    dest: /etc/dovecot/conf.d/30-dsync.conf
+    owner: '{{ dovecot_user.name }}'
+    group: dovecot
+    mode: 0440
+  when: dovecot_dsync | default(false)
+  notify: restart dovecot
+
 - name: DOVECOT | configure (auth-sql.conf.ext)
   template:
     src: etc/dovecot/conf.d/auth-sql.conf.ext.j2
