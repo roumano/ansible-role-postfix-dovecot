@@ -10,3 +10,4 @@
 - include: sql.yml
   when: sql
 - include: postgrey.yml
+  when: postgrey
