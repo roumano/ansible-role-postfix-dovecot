@@ -4,10 +4,13 @@
 - name: Update apt cache
   apt:
     update_cache: yes
+    cache_valid_time: "{{ apt_update_cache_valid_time | default(86400) }}"
 
 - include: dovecot.yml
 - include: postfix.yml
 - include: sql.yml
+  when: sql
 - include: solr.yml
   when: solr | default (False) | bool
 - include: postgrey.yml
+  when: postgrey

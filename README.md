@@ -15,6 +15,7 @@ it must be concatenated after the certificate in the same file.
 
 #### Optional Variables
 * **solr** - [true/false], default is false, enable Solr backend for indexing mail's content
+* **sql** - [true/false], default is true, disable mysql backend
 * **postfix_dovecot_mysql_host** - the FQDN or IP address to the MySQL server for authentication. This defaults to `127.0.0.1`.
 * **postfix_dovecot_mysql_db_name** - the database name on the MySQL server used for authentication. This defaults to `servermail`.
 * **postfix_dovecot_mysql_user** - the user that has permission to query the database on the MySQL server used for authentication. This defaults to `usermail`.
@@ -48,6 +49,17 @@ Note that to also enable POP3S, you need to add pop3 to the `dovecot_protocols` 
 * **dovecot_ssl** - determines whether or not SSL is enforced across all protocols. This defaults to `required`.
 For more information, read Dovecot's [SSL Configuration](http://wiki.dovecot.org/SSL/DovecotConfiguration) documentation.
 * **dovecot_listen** - a list of IP or host addresses where Dovecot listens for connections. This defaults to `*` (all IPv4) and '::' (all IPv6).
+* **dovecot_user** - specifiy the user for the dovecot service
+* **ldap** - specify ldap configuration to bind
+  * **base** - LDAP base
+  * **uris** ldap(s) servers to bind
+  * **auth_bind** - Use authentication binding for verifying password's validity
+  * **auth_bind_userdn** - specify the user bind
+  * **pass_attrs** - LDAP Special fields which can be returned
+  * **pass_filter** - Filter for password lookups
+* **mail_location** - specify the Location for users' mailboxes, default value is : `/var/mail/vhosts/%d/%n`
+* **dovecot_dsync** - Default is false, enable dsync synchro between dovecot cluster (need notify and replication dovecot_mail_plugins)
+* **dovecot_default_vsz_limit** - Default VSZ (virtual memory size) limit for service processes (Default is `256M`)
 
 ## Requirements
 
