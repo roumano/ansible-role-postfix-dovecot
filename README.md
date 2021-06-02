@@ -14,6 +14,7 @@ it must be concatenated after the certificate in the same file.
 * **postfix_dovecot_mysql_password** - the password to the user that has permission to query the database on the SQL database server used for authentication.
 
 #### Optional Variables
+* **sql** - [true/false], default is true, disable mysql backend
 * **postfix_dovecot_mysql_host** - the FQDN or IP address to the MySQL server for authentication. This defaults to `127.0.0.1`.
 * **postfix_dovecot_mysql_db_name** - the database name on the MySQL server used for authentication. This defaults to `servermail`.
 * **postfix_dovecot_mysql_user** - the user that has permission to query the database on the MySQL server used for authentication. This defaults to `usermail`.
@@ -49,6 +50,8 @@ For more information, read Dovecot's [SSL Configuration](http://wiki.dovecot.org
 * **dovecot_listen** - a list of IP or host addresses where Dovecot listens for connections. This defaults to `*` (all IPv4) and '::' (all IPv6).
 * **dovecot_user** - specifiy the user for the dovecot service
 * **mail_location** - specify the Location for users' mailboxes, default value is : `/var/mail/vhosts/%d/%n`
+* **dovecot_dsync** - Default is false, enable dsync synchro between dovecot cluster (need notify and replication dovecot_mail_plugins)
+* **dovecot_default_vsz_limit** - Default VSZ (virtual memory size) limit for service processes (Default is `256M`)
 
 ## Requirements
 
