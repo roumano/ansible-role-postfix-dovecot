@@ -118,8 +118,10 @@ auth_mechanisms = {{ dovecot_auth_mechanisms | join(' ') }}
 # <doc/wiki/UserDatabase.txt>
 {% if sql %}
 !include auth-sql.conf.ext
+ {% endif %}
+{% if ldap %}
+!include auth-ldap.conf.ext
 {% endif %}
-
 
 #!include auth-deny.conf.ext
 #!include auth-master.conf.ext

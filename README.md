@@ -49,6 +49,13 @@ Note that to also enable POP3S, you need to add pop3 to the `dovecot_protocols` 
 For more information, read Dovecot's [SSL Configuration](http://wiki.dovecot.org/SSL/DovecotConfiguration) documentation.
 * **dovecot_listen** - a list of IP or host addresses where Dovecot listens for connections. This defaults to `*` (all IPv4) and '::' (all IPv6).
 * **dovecot_user** - specifiy the user for the dovecot service
+* **ldap** - specify ldap configuration to bind
+  * **base** - LDAP base
+  * **uris** ldap(s) servers to bind
+  * **auth_bind** - Use authentication binding for verifying password's validity
+  * **auth_bind_userdn** - specify the user bind
+  * **pass_attrs** - LDAP Special fields which can be returned
+  * **pass_filter** - Filter for password lookups
 * **mail_location** - specify the Location for users' mailboxes, default value is : `/var/mail/vhosts/%d/%n`
 * **dovecot_dsync** - Default is false, enable dsync synchro between dovecot cluster (need notify and replication dovecot_mail_plugins)
 * **dovecot_default_vsz_limit** - Default VSZ (virtual memory size) limit for service processes (Default is `256M`)

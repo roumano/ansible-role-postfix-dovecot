@@ -93,6 +93,16 @@
   when: sql | bool
   notify: restart dovecot
 
+- name: DOVECOT | configure (dovecot-ldap.conf.ext)
+  template:
+    src: etc/dovecot/dovecot-ldap.conf.ext.j2
+    dest: /etc/dovecot/dovecot-ldap.conf.ext
+    owner: '{{ dovecot_user.name }}'
+    group: dovecot
+    mode: 0440
+  when: ldap is defined
+  notify: restart dovecot
+
 - name: DOVECOT | configure (10-master.conf)
   template:
     src: etc/dovecot/conf.d/10-master.conf.j2
@@ -129,4 +139,21 @@
     group: dovecot
     mode: 0440
   when: sql | bool
+  notify: restart dovecot
+
+- name: DOVECOT | configure (auth-ldap.conf.ext)
+  template:
+    src: etc/dovecot/conf.d/auth-ldap.conf.ext.j2
+    dest: /etc/dovecot/conf.d/auth-ldap.conf.ext
+    owner: '{{ dovecot_user.name }}'
+    group: dovecot
+    mode: 0440
+  when: ldap is defined
+  notify: restart dovecot
+
+- name: DOVECOT | install ldap driver
+  apt:
+    pkg: dovecot-ldap
+    state: present
+  when: ldap is defined
   notify: restart dovecot
