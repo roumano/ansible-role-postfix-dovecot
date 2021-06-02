@@ -47,6 +47,14 @@ Note that to also enable POP3S, you need to add pop3 to the `dovecot_protocols` 
 * **dovecot_ssl** - determines whether or not SSL is enforced across all protocols. This defaults to `required`.
 For more information, read Dovecot's [SSL Configuration](http://wiki.dovecot.org/SSL/DovecotConfiguration) documentation.
 * **dovecot_listen** - a list of IP or host addresses where Dovecot listens for connections. This defaults to `*` (all IPv4) and '::' (all IPv6).
+* **dovecot_user** - specifiy the user for the dovecot service
+* **ldap** - specify ldap configuration to bind
+  * **base** - LDAP base
+  * **uris** ldap(s) servers to bind
+  * **auth_bind** - Use authentication binding for verifying password's validity
+  * **auth_bind_userdn** - specify the user bind
+  * **pass_attrs** - LDAP Special fields which can be returned
+  * **pass_filter** - Filter for password lookups
 
 ## Requirements
 
