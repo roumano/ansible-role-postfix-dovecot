@@ -214,6 +214,9 @@ mail_privileged_group = {{ dovecot_mail_privileged_group }}
 # Space separated list of plugins to load for all services. Plugins specific to
 # IMAP, LDA, etc. are added to this list in their own .conf files.
 #mail_plugins = 
+{% if dovecot_mail_plugins is defined %}
+mail_plugins = $mail_plugins {{ dovecot_mail_plugins | map(attribute='name')  | join(' ') }}
+{% endif %}
 
 ##
 ## Mailbox handling optimizations

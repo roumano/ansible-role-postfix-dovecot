@@ -101,6 +101,15 @@
     mode: 0440
   notify: restart dovecot
 
+- name: DOVECOT | configure (90-plugin.conf)
+  template:
+    src: etc/dovecot/conf.d/90-plugin.conf.j2
+    dest: /etc/dovecot/conf.d/90-plugin.conf
+    owner: '{{ dovecot_user.name }}'
+    group: dovecot
+    mode: 0440
+  notify: restart dovecot
+
 - name: DOVECOT | configure (auth-sql.conf.ext)
   template:
     src: etc/dovecot/conf.d/auth-sql.conf.ext.j2
