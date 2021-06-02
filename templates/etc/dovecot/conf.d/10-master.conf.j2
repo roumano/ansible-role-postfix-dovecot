@@ -7,6 +7,9 @@
 # intended to catch and kill processes that leak memory before they eat up
 # everything.
 #default_vsz_limit = 256M
+{% if default_vsz_limit is defined %}
+default_vsz_limit = {{ default_vsz_limit }}
+{% endif %}
 
 # Login user is internally used by login processes. This is the most untrusted
 # user in Dovecot system. It shouldn't have access to anything at all.
@@ -94,11 +97,13 @@ service auth {
   # To give the caller full permissions to lookup all users, set the mode to
   # something else than 0666 and Dovecot lets the kernel enforce the
   # permissions (e.g. 0777 allows everyone full permissions).
+  {% if sql %}
   unix_listener auth-userdb {
     mode = 0600
     user = vmail
     #group = 
   }
+{% endif %}
 
   # Postfix smtp-auth
   unix_listener /var/spool/postfix/private/auth {
