@@ -48,6 +48,7 @@ Note that to also enable POP3S, you need to add pop3 to the `dovecot_protocols` 
 For more information, read Dovecot's [SSL Configuration](http://wiki.dovecot.org/SSL/DovecotConfiguration) documentation.
 * **dovecot_listen** - a list of IP or host addresses where Dovecot listens for connections. This defaults to `*` (all IPv4) and '::' (all IPv6).
 * **dovecot_user** - specifiy the user for the dovecot service
+* **mail_location** - specify the Location for users' mailboxes, default value is : `/var/mail/vhosts/%d/%n`
 
 ## Requirements
 
