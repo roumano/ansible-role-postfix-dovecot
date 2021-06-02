@@ -30,7 +30,7 @@ alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 myorigin = /etc/mailname
 mydestination = {{ postfix_mydestination | join(', ') }}
-relayhost = 
+relayhost = {{ postfix_relayhost | default ('') }}
 mynetworks = {{ postfix_mynetworks | join(' ') }}
 mailbox_size_limit = 0
 recipient_delimiter = +
@@ -50,9 +50,11 @@ smtpd_helo_restrictions = {{ postfix_smtpd_helo_restrictions | join(', ') }}
 smtpd_sender_restrictions = {{ postfix_smtpd_sender_restrictions | join(', ') }}
 
 virtual_transport = lmtp:unix:private/dovecot-lmtp
+{% if sql %}
 virtual_mailbox_domains = mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
 virtual_mailbox_maps = mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
 virtual_alias_maps = mysql:/etc/postfix/mysql-virtual-alias-maps.cf
+{% endif %}
 
 address_verify_negative_refresh_time = 60s
 address_verify_sender_ttl = 15686s

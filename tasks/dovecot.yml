@@ -5,29 +5,38 @@
     state: present
   notify: restart dovecot
 
+- name: DOVECOT | install mysql driver
+  apt:
+    pkg: dovecot-ldap
+    state: present
+  when: sql | bool
+  notify: restart dovecot
+
 - name: DOVECOT | ensure Dovecot is started and runs at startup
   service:
     name: dovecot
     state: started
     enabled: yes
 
-- name: DOVECOT | create vmail group
+- name: 'DOVECOT | create {{ dovecot_user.group }} group'
   group:
-    name: vmail
-    gid: 5000
+    name: '{{ dovecot_user.group }}'
+    gid: '{{ dovecot_user.gid }}'
+  when: dovecot_user.name != 'dovecot'
 
-- name: DOVECOT | create vmail user
+- name: DOVECOT | create {{ dovecot_user.name }} user
   user:
-    name: vmail
-    group: vmail
-    uid: 5000
-    home: /var/mail
+    name: '{{ dovecot_user.name }}'
+    group: '{{ dovecot_user.group }}'
+    uid: '{{ dovecot_user.uid }}'
+    home: '{{ dovecot_user.home }}'
+  when: dovecot_user.name != 'dovecot'
 
 - name: DOVECOT | set secure permissions and ownership on /etc/dovecot
   file:
     path: /etc/dovecot
     state: directory
-    owner: vmail
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: o-rwx
 
@@ -35,14 +44,14 @@
   file:
     path: /var/mail/vhosts
     state: directory
-    owner: vmail
-    group: vmail
+    owner: '{{ dovecot_user.name }}'
+    group: '{{ dovecot_user.group }}'
 
 - name: DOVECOT | configure (dovecot.conf)
   template:
     src: etc/dovecot/dovecot.conf.j2
     dest: /etc/dovecot/dovecot.conf
-    owner: vmail
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
   notify: restart dovecot
@@ -51,7 +60,7 @@
   template:
     src: etc/dovecot/conf.d/10-mail.conf.j2
     dest: /etc/dovecot/conf.d/10-mail.conf
-    owner: vmail
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
   notify: restart dovecot
@@ -60,7 +69,7 @@
   template:
     src: etc/dovecot/conf.d/15-mailboxes.conf.j2
     dest: /etc/dovecot/conf.d/15-mailboxes.conf
-    owner: vmail
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
   notify: restart dovecot
@@ -69,7 +78,7 @@
   template:
     src: etc/dovecot/conf.d/10-auth.conf.j2
     dest: /etc/dovecot/conf.d/10-auth.conf
-    owner: vmail
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
   notify: restart dovecot
@@ -78,16 +87,17 @@
   template:
     src: etc/dovecot/dovecot-sql.conf.ext.j2
     dest: /etc/dovecot/dovecot-sql.conf.ext
-    owner: vmail
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
+  when: sql | bool
   notify: restart dovecot
 
 - name: DOVECOT | configure (10-master.conf)
   template:
     src: etc/dovecot/conf.d/10-master.conf.j2
     dest: /etc/dovecot/conf.d/10-master.conf
-    owner: vmail
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
   notify: restart dovecot
@@ -96,9 +106,19 @@
   template:
     src: etc/dovecot/conf.d/10-ssl.conf.j2
     dest: /etc/dovecot/conf.d/10-ssl.conf
-    owner: vmail
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
+  notify: restart dovecot
+
+- name: DOVECOT | configure (dsync.conf)
+  template:
+    src: etc/dovecot/conf.d/30-dsync.conf.j2
+    dest: /etc/dovecot/conf.d/30-dsync.conf
+    owner: '{{ dovecot_user.name }}'
+    group: dovecot
+    mode: 0440
+  when: dovecot_dsync | default(false)
   notify: restart dovecot
 
 - name: DOVECOT | configure (90-plugin.conf)
@@ -114,7 +134,8 @@
   template:
     src: etc/dovecot/conf.d/auth-sql.conf.ext.j2
     dest: /etc/dovecot/conf.d/auth-sql.conf.ext
-    owner: vmail
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
+  when: sql | bool
   notify: restart dovecot
