@@ -47,6 +47,7 @@ Note that to also enable POP3S, you need to add pop3 to the `dovecot_protocols` 
 * **dovecot_ssl** - determines whether or not SSL is enforced across all protocols. This defaults to `required`.
 For more information, read Dovecot's [SSL Configuration](http://wiki.dovecot.org/SSL/DovecotConfiguration) documentation.
 * **dovecot_listen** - a list of IP or host addresses where Dovecot listens for connections. This defaults to `*` (all IPv4) and '::' (all IPv6).
+* **dovecot_dsync** - Default is false, enable dsync synchro between dovecot cluster (need notify and replication dovecot_mail_plugins)
 
 ## Requirements
 
