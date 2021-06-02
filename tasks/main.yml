@@ -9,3 +9,4 @@
 - include: postfix.yml
 - include: sql.yml
 - include: postgrey.yml
+  when: postgrey
