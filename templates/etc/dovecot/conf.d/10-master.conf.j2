@@ -100,8 +100,8 @@ service auth {
   {% if sql %}
   unix_listener auth-userdb {
     mode = 0600
-    user = vmail
-    #group = 
+    user = {{ dovecot_user.name }}
+    #group =
   }
 {% endif %}
 
@@ -120,7 +120,7 @@ service auth-worker {
   # Auth worker process is run as root by default, so that it can access
   # /etc/shadow. If this isn't necessary, the user should be changed to
   # $default_internal_user.
-  user = vmail
+  user = {{ dovecot_user.name }}
 }
 
 service dict {

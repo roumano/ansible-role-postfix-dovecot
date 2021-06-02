@@ -1,4 +1,11 @@
 ---
+dovecot_user:
+  name: vmail
+  group: vmail
+  uid: 5000
+  gid: 500
+  home: /var/mail
+
 dovecot_protocols:
 - 'lmtp'
 - 'imap'
