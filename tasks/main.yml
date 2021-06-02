@@ -10,5 +10,7 @@
 - include: postfix.yml
 - include: sql.yml
   when: sql
+- include: solr.yml
+  when: solr | default (False) | bool
 - include: postgrey.yml
   when: postgrey

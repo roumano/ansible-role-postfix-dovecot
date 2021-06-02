@@ -1,0 +1,16 @@
+---
+- name: SolR | install
+  apt:
+    pkg:
+    - dovecot-solr
+    - solr-tomcat
+    state: present
+
+- name: SolR | Configure schema
+  template:
+    src: etc/solr/conf/schema.xml.j2
+    dest: /etc/solr/conf/schema.xml
+    owner: 'root'
+    group: root
+    mode: 0444
+  #notify: restart tomecat
