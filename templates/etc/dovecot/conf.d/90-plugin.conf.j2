@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+#
+##
+## Plugin settings
+##
+
+# All wanted plugins must be listed in mail_plugins setting before any of the
+# settings take effect. See <doc/wiki/Plugins.txt> for list of plugins and
+# their configuration. Note that %variable expansion is done for all values.
+
+plugin {
+{% if dovecot_mail_plugins_options is defined %}
+{% for entry in dovecot_mail_plugins_options %}
+  {{ entry.name }} = {{ entry.value }}
+{% endfor %}
+{%endif %}
+}

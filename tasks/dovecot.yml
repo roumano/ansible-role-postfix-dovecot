@@ -5,29 +5,38 @@
     state: present
   notify: restart dovecot
 
+- name: DOVECOT | install mysql driver
+  apt:
+    pkg: dovecot-mysql
+    state: present
+  when: sql | bool
+  notify: restart dovecot
+
 - name: DOVECOT | ensure Dovecot is started and runs at startup
   service:
     name: dovecot
     state: started
     enabled: yes
 
-- name: DOVECOT | create vmail group
+- name: 'DOVECOT | create {{ dovecot_user.group }} group'
   group:
-    name: vmail
-    gid: 5000
+    name: '{{ dovecot_user.group }}'
+    gid: '{{ dovecot_user.gid }}'
+  when: dovecot_user.name != 'dovecot'
 
-- name: DOVECOT | create vmail user
+- name: DOVECOT | create {{ dovecot_user.name }} user
   user:
-    name: vmail
-    group: vmail
-    uid: 5000
-    home: /var/mail
+    name: '{{ dovecot_user.name }}'
+    group: '{{ dovecot_user.group }}'
+    uid: '{{ dovecot_user.uid }}'
+    home: '{{ dovecot_user.home }}'
+  when: dovecot_user.name != 'dovecot'
 
 - name: DOVECOT | set secure permissions and ownership on /etc/dovecot
   file:
     path: /etc/dovecot
     state: directory
-    owner: vmail
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: o-rwx
 
@@ -35,77 +44,108 @@
   file:
     path: /var/mail/vhosts
     state: directory
-    owner: vmail
-    group: vmail
+    owner: '{{ dovecot_user.name }}'
+    group: '{{ dovecot_user.group }}'
 
 - name: DOVECOT | configure (dovecot.conf)
   template:
     src: etc/dovecot/dovecot.conf.j2
     dest: /etc/dovecot/dovecot.conf
-    owner: vmail
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
   notify: restart dovecot
 
-- name: DOVECOT | configure (10-mail.conf)
+- name: DOVECOT | configure conf.d
   template:
-    src: etc/dovecot/conf.d/10-mail.conf.j2
-    dest: /etc/dovecot/conf.d/10-mail.conf
-    owner: vmail
+    src: etc/dovecot/conf.d/{{ item }}.j2
+    dest: /etc/dovecot/conf.d/{{ item }}
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
   notify: restart dovecot
+  loop:
+  - 10-ssl.conf
+  - 10-mail.conf
+  - 10-logging.conf
+  - 10-master.conf
+  - 10-auth.conf
+  - 15-mailboxes.conf
+  - 15-lda.conf
+  - 20-lmtp.conf
+  - 90-plugin.conf
 
-- name: DOVECOT | configure (15-mailboxes.conf)
+- name: DOVECOT | configure (dsync.conf)
   template:
-    src: etc/dovecot/conf.d/15-mailboxes.conf.j2
-    dest: /etc/dovecot/conf.d/15-mailboxes.conf
-    owner: vmail
+    src: etc/dovecot/conf.d/30-dsync.conf.j2
+    dest: /etc/dovecot/conf.d/30-dsync.conf
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
+  when: dovecot_dsync | default(false)
   notify: restart dovecot
 
-- name: DOVECOT | configure (10-auth.conf)
+- name: DOVECOT | configure (metadata.conf)
   template:
-    src: etc/dovecot/conf.d/10-auth.conf.j2
-    dest: /etc/dovecot/conf.d/10-auth.conf
-    owner: vmail
+    src: etc/dovecot/conf.d/99-metadata.conf.j2
+    dest: /etc/dovecot/conf.d/99-metadata.conf
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
+  when: dovecot_dsync | default(false) and sieve | default (False) | bool
   notify: restart dovecot
 
 - name: DOVECOT | configure (dovecot-sql.conf.ext)
   template:
     src: etc/dovecot/dovecot-sql.conf.ext.j2
     dest: /etc/dovecot/dovecot-sql.conf.ext
-    owner: vmail
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
+  when: sql | bool
   notify: restart dovecot
 
-- name: DOVECOT | configure (10-master.conf)
+- name: DOVECOT | configure (dovecot-ldap.conf.ext)
   template:
-    src: etc/dovecot/conf.d/10-master.conf.j2
-    dest: /etc/dovecot/conf.d/10-master.conf
-    owner: vmail
+    src: etc/dovecot/dovecot-ldap.conf.ext.j2
+    dest: /etc/dovecot/dovecot-ldap.conf.ext
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
-  notify: restart dovecot
-
-- name: DOVECOT | configure (10-ssl.conf)
-  template:
-    src: etc/dovecot/conf.d/10-ssl.conf.j2
-    dest: /etc/dovecot/conf.d/10-ssl.conf
-    owner: vmail
-    group: dovecot
-    mode: 0440
+  when: ldap is defined
   notify: restart dovecot
 
 - name: DOVECOT | configure (auth-sql.conf.ext)
   template:
     src: etc/dovecot/conf.d/auth-sql.conf.ext.j2
     dest: /etc/dovecot/conf.d/auth-sql.conf.ext
-    owner: vmail
+    owner: '{{ dovecot_user.name }}'
     group: dovecot
     mode: 0440
+  when: sql | bool
   notify: restart dovecot
+
+- name: DOVECOT | configure (auth-ldap.conf.ext)
+  template:
+    src: etc/dovecot/conf.d/auth-ldap.conf.ext.j2
+    dest: /etc/dovecot/conf.d/auth-ldap.conf.ext
+    owner: '{{ dovecot_user.name }}'
+    group: dovecot
+    mode: 0440
+  when: ldap is defined
+  notify: restart dovecot
+
+- name: DOVECOT | install ldap driver
+  apt:
+    pkg: dovecot-ldap
+    state: present
+  when: ldap is defined
+  notify: restart dovecot
+
+- name: DOVECOT | set log file permissions and ownership
+  file:
+    path: "{{ dovecot_log_path }}"
+    owner: '{{ dovecot_user.name }}'
+    group: dovecot
+    mode: "{{ perm | default ('0640') }}"
+  when: dovecot_log_path is defined

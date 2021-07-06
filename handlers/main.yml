@@ -1,4 +1,12 @@
 ---
+- name: POSTFIX | postmap /etc/postfix/helo_access (generate /etc/postfix/helo_access.db)
+  command: postmap /etc/postfix/helo_access
+  notify: restart postfix
+
+- name: POSTFIX | postmap /etc/postfix/rbl_override (generate /etc/postfix/rbl_override.db)
+  command: postmap /etc/postfix/rbl_override
+  notify: restart postfix
+
 - name: restart dovecot
   service:
     name: dovecot
@@ -13,3 +21,15 @@
   service:
     name: postgrey
     state: restarted
+
+- name: restart tomecat
+  service:
+    name: tomcat9
+    state: restarted
+
+- name: sievec
+  command:
+    cmd: "sievec {{ item.dest }}"
+  become: yes
+  become_user: dovecot
+  loop: "{{ sievec.results }}"

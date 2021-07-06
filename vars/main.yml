@@ -4,7 +4,6 @@ pkg_dovecot:
   - dovecot-imapd
   - dovecot-pop3d
   - dovecot-lmtpd
-  - dovecot-mysql
 
 pkg_postfix:
   - postfix

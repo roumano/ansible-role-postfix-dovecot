@@ -26,13 +26,22 @@ smtp_tls_session_cache_database =
 
 smtpd_relay_restrictions = {{ postfix_smtpd_relay_restrictions | join(', ') }}
 myhostname = {{ postfix_myhostname | default(ansible_fqdn) }}
+{% if postfix_alias is defined %}
+alias_maps = hash:/etc/aliases, {{ postfix_alias.type }}:{{ postfix_alias.dest }}
+{% else %}
 alias_maps = hash:/etc/aliases
+{% endif %}
+
 alias_database = hash:/etc/aliases
 myorigin = /etc/mailname
 mydestination = {{ postfix_mydestination | join(', ') }}
-relayhost = 
+relayhost = {{ postfix_relayhost | default ('') }}
 mynetworks = {{ postfix_mynetworks | join(' ') }}
 mailbox_size_limit = 0
+{% if postfix_message_size_limit is defined %}
+message_size_limit = {{ postfix_message_size_limit }}
+{% endif %}
+
 recipient_delimiter = +
 inet_interfaces = all
 inet_protocols = {{ postfix_inet_protocols }}
@@ -50,9 +59,11 @@ smtpd_helo_restrictions = {{ postfix_smtpd_helo_restrictions | join(', ') }}
 smtpd_sender_restrictions = {{ postfix_smtpd_sender_restrictions | join(', ') }}
 
 virtual_transport = lmtp:unix:private/dovecot-lmtp
+{% if sql %}
 virtual_mailbox_domains = mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
 virtual_mailbox_maps = mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
 virtual_alias_maps = mysql:/etc/postfix/mysql-virtual-alias-maps.cf
+{% endif %}
 
 address_verify_negative_refresh_time = 60s
 address_verify_sender_ttl = 15686s
@@ -67,4 +78,14 @@ smtp_tls_protocols = !SSLv2,!SSLv3
 smtp_tls_security_level = dane
 {% if postfix_smtp_dns_support_level is sameas true %}
 smtp_dns_support_level = dnssec
+{% endif %}
+{% if postfix_relocated_maps is defined %}
+relocated_maps = {{ postfix_relocated_maps.type }}:{{ postfix_relocated_maps.dest }}
+{% endif %}
+
+{% if postfix_mailbox_command is defined %}
+mailbox_command = {{ postfix_mailbox_command }}
+{% endif %}
+{% if postfix_local_recipient_maps is defined %}
+local_recipient_maps = {{ postfix_local_recipient_maps.type }}:{{ postfix_local_recipient_maps.dest }}
 {% endif %}

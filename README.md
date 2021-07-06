@@ -14,7 +14,10 @@ it must be concatenated after the certificate in the same file.
 * **postfix_dovecot_mysql_password** - the password to the user that has permission to query the database on the SQL database server used for authentication.
 
 #### Optional Variables
+* **solr** - [true/false], default is false, enable Solr backend for indexing mail's content
+* **sql** - [true/false], default is true, disable mysql backend
 * **postfix_dovecot_mysql_host** - the FQDN or IP address to the MySQL server for authentication. This defaults to `127.0.0.1`.
+* **postfix_mydomain** - Define mydomain in postfix configuration
 * **postfix_dovecot_mysql_db_name** - the database name on the MySQL server used for authentication. This defaults to `servermail`.
 * **postfix_dovecot_mysql_user** - the user that has permission to query the database on the MySQL server used for authentication. This defaults to `usermail`.
 * **postfix_dovecot_mysql_password_scheme** - the password scheme used to encrypt passwords in the database. This defaults to `SHA512-CRYPT`.
@@ -31,9 +34,11 @@ This defaults to `permit_mynetworks`, `permit_sasl_authenticated`, and `defer_un
 This defaults to `127.0.0.0/8`, `[::ffff:127.0.0.0]/104`, `[::1]/128`.
 * **postfix_mydestination** - a list for the Postfix configuration value of `mydestination`. For information on visit the [Postfix documentation](http://www.postfix.org/postconf.5.html#mydestination).
 This defaults to `localhost`.
+* **postfix_alias** - define another alias lookup for user
 * **postfix_mysql_alias_query** - the query used to find the destination of an alias when the source is supplied. This defaults to `SELECT destination FROM virtual_aliases WHERE source='%s';`.
 * **postfix_mysql_domains_query** - the query used to determine if a domain is valid. This defaults to `SELECT 1 FROM virtual_domains WHERE name='%s';`.
 * **postfix_mysql_users_query** - the query used to determine if an email address is valid. This defaults to `SELECT 1 FROM virtual_users WHERE email='%s';`.
+* **postfix_mailbox_command** - Specifiy mailbox command
 * **dovecot_mysql_password_query** - the query used to authenticate a user on the MySQL server used for authentication. This defaults to `SELECT email as user, password FROM virtual_users WHERE email='%u';`.
 * **dovecot_protocols** - a list of protocols to be enabled. This defaults to `lmtp` and `imap`. To enable POP3, add `pop3` to this variable. (note: `apt install dovecot-pop3d` on the target to use pop3)  
 * **dovecot_mail_privileged_group** - the group that owns the folder defined in `dovecot_mail_location`.
@@ -47,6 +52,24 @@ Note that to also enable POP3S, you need to add pop3 to the `dovecot_protocols` 
 * **dovecot_ssl** - determines whether or not SSL is enforced across all protocols. This defaults to `required`.
 For more information, read Dovecot's [SSL Configuration](http://wiki.dovecot.org/SSL/DovecotConfiguration) documentation.
 * **dovecot_listen** - a list of IP or host addresses where Dovecot listens for connections. This defaults to `*` (all IPv4) and '::' (all IPv6).
+* **dovecot_mail_plugins** - list of plugins to load. Plugins specific to IMPA, LDA, etc.
+* **dovecot_user** - specifiy the user for the dovecot service
+* **ldap** - specify ldap configuration to bind
+  * **base** - LDAP base
+  * **uris** ldap(s) servers to bind
+  * **auth_bind** - Use authentication binding for verifying password's validity
+  * **auth_bind_userdn** - specify the user bind
+  * **pass_attrs** - LDAP Special fields which can be returned
+  * **pass_filter** - Filter for password lookups
+* **mail_location** - specify the Location for users' mailboxes, default value is : `/var/mail/vhosts/%d/%n`
+* **dovecot_dsync** - Default is false, enable dsync synchro between dovecot cluster (need notify and replication dovecot_mail_plugins)
+* **doveadm_password** - Password for replicator (Used only if dsync is enabled)
+* **dovecot_default_vsz_limit** - Default VSZ (virtual memory size) limit for service processes (Default is `256M`)
+* **dovecot_log_path** - Define log path of dovecot - defaut : syslog
+* **dovecot_auth_verbose** - Log unsuccessful authentication attempts and the reasons why they failed
+* **dovecot_INBOX_path** - Optional, Path of the INBOX (need if use dsync)(Exemple : `~/Maildir/.INBOX`)
+* **dovecot_INDEX_path** - Optional : Path of dovecot index, by default in the mail directory
+* **tomcat_loglevel** - Define tomcat log level when solr is enabled (level available : [ SEVERE , WARNING , INFO , CONFIG , FINE, FINER , FINEST ])
 
 ## Requirements
 
@@ -82,6 +105,12 @@ _site.yml_
     dovecot_ssl_key: /etc/ssl/private/dovecot.pem
     postfix_ssl_cert: /etc/ssl/certs/postfix.pem
     postfix_ssl_key: /etc/ssl/private/postfix.pem
+    dovecot_mail_plugins:
+    - name: fts
+      value: solr
+    - name: fts_solr
+      value: url=http://localhost:8080/solr/ debug
+    solr: true
 
 ```
 

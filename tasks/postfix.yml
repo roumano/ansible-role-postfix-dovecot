@@ -5,6 +5,13 @@
     state: present
   notify: restart postfix
 
+- name: POSTFIX | install ldap driver
+  apt:
+    pkg: postfix-ldap
+    state: present
+  when: ldap is defined
+  notify: restart postfix
+
 - name: POSTFIX | ensure Postfix is started and runs at startup
   service:
     name: postfix
@@ -36,6 +43,7 @@
     owner: postfix
     group: root
     mode: 0660
+  when: sql | bool
   notify: restart postfix
 
 - name: POSTFIX | configure (mysql-virtual-mailbox-domains.cf)
@@ -45,6 +53,7 @@
     owner: postfix
     group: root
     mode: 0660
+  when: sql | bool
   notify: restart postfix
 
 - name: POSTFIX | configure (mysql-virtual-mailbox-maps.cf)
@@ -54,34 +63,61 @@
     owner: postfix
     group: root
     mode: 0660
+  when: sql | bool
   notify: restart postfix
 
 - name: POSTFIX | configure (helo_access)
   copy:
     src: postfix_helo_access
     dest: /etc/postfix/helo_access
-
-- name: POSTFIX | postmap /etc/postfix/helo_access (generate /etc/postfix/helo_access.db)
-  command: postmap /etc/postfix/helo_access
-  notify: restart postfix
+  notify:
+  - POSTFIX | postmap /etc/postfix/helo_access (generate /etc/postfix/helo_access.db)
+  - restart postfix
 
 - name: POSTFIX | Create A Whitelist rbl (/etc/postfix/rbl_override)
   copy:
     src: postgrey-rbl_override
     dest: /etc/postfix/rbl_override
-
-- name: POSTFIX | postmap /etc/postfix/rbl_override (generate /etc/postfix/rbl_override.db)
-  command: postmap /etc/postfix/rbl_override
-  notify: restart postfix
-
-
+  notify:
+  - POSTFIX | postmap /etc/postfix/rbl_override (generate /etc/postfix/rbl_override.db)
+  - restart postfix
 
 - name: POSTFIX | set the default domain name to be used (/etc/mailname)
   copy:
-    content: "{{ postfix_default_domain + '\n' }}"
+    content: "{{ postfix_default_domain }}"
     dest: /etc/mailname
     owner: root
     group: root
     mode: 0644
   notify: restart postfix
   when: postfix_default_domain is defined
+
+- name: POSTFIX | set relocated_maps
+  copy:
+    content: "{{ postfix_relocated_maps.data + '\n' }}"
+    dest: "{{ postfix_relocated_maps.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart postfix
+  when: postfix_relocated_maps is defined
+
+- name: POSTFIX | set aliases_maps
+  copy:
+    content: "{{ postfix_alias.data + '\n' }}"
+    dest: "{{ postfix_alias.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart postfix
+  when: postfix_alias is defined
+
+- name: POSTFIX | set postfix_local_recipient_maps
+  copy:
+    content: "{{ postfix_local_recipient_maps.data + '\n' }}"
+    dest: "{{ postfix_local_recipient_maps.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart postfix
+  when: postfix_local_recipient_maps is defined

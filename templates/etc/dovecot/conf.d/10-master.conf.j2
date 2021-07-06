@@ -1,12 +1,21 @@
 # {{ ansible_managed }}
 #
 #default_process_limit = 100
+{% if dovecot_default_process_limit is defined %}
+default_process_limit = {{ dovecot_default_process_limit }}
+{% endif %}
 #default_client_limit = 1000
+{% if dovecot_default_client_limit is defined %}
+default_client_limit = {{ dovecot_default_client_limit }}
+{% endif %}
 
 # Default VSZ (virtual memory size) limit for service processes. This is mainly
 # intended to catch and kill processes that leak memory before they eat up
 # everything.
 #default_vsz_limit = 256M
+{% if dovecot_default_vsz_limit is defined %}
+default_vsz_limit = {{ dovecot_default_vsz_limit }}
+{% endif %}
 
 # Login user is internally used by login processes. This is the most untrusted
 # user in Dovecot system. It shouldn't have access to anything at all.
@@ -62,7 +71,7 @@ service lmtp {
   #inet_listener lmtp {
     # Avoid making LMTP visible for the entire internet
     #address =
-    #port = 
+    #port =
   #}
 }
 
@@ -94,11 +103,13 @@ service auth {
   # To give the caller full permissions to lookup all users, set the mode to
   # something else than 0666 and Dovecot lets the kernel enforce the
   # permissions (e.g. 0777 allows everyone full permissions).
+  {% if sql %}
   unix_listener auth-userdb {
     mode = 0600
-    user = vmail
-    #group = 
+    user = {{ dovecot_user.name }}
+    #group =
   }
+{% endif %}
 
   # Postfix smtp-auth
   unix_listener /var/spool/postfix/private/auth {
@@ -115,7 +126,7 @@ service auth-worker {
   # Auth worker process is run as root by default, so that it can access
   # /etc/shadow. If this isn't necessary, the user should be changed to
   # $default_internal_user.
-  user = vmail
+  user = {{ dovecot_user.name }}
 }
 
 service dict {
@@ -123,7 +134,16 @@ service dict {
   # For example: mode=0660, group=vmail and global mail_access_groups=vmail
   unix_listener dict {
     #mode = 0600
-    #user = 
-    #group = 
+    #user =
+    #group =
   }
 }
+
+# fix Error: net_connect_unix(/var/run/dovecot/stats-writer) failed: Permission denied))
+service stats {
+   unix_listener stats-writer {
+     group = dovecot
+     mode = {{ perm | default ('0660') }}
+     user =
+   }
+  }

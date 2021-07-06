@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+# Store METADATA information within user's Maildir directory 
+mail_attribute_dict = file:%h/Maildir/dovecot-attributes
+protocol imap {
+      imap_metadata = yes
+      }

@@ -1,0 +1,46 @@
+# {{ ansible_managed }}
+#
+# Port utilisé pour écouter et se connecter à l'instance doveadm distante
+doveadm_port = 4321
+
+# Mot de passe pour valider le client doveadm
+doveadm_password = {{ doveadm_password | default ('To_be_Change') }}
+
+# configure how many dsyncs can be run in parallel (10 by default)
+replication_max_conns = 10
+
+# Certificat racine permettant la validation du certificat
+#ssl_client_ca_file = /etc/pki/tls/cert.pem
+
+# Configure le port sur lequel doveadm va écouter
+service doveadm {
+    inet_listener {
+        port = 4321
+        ssl = no
+    }
+}
+
+# Configure les notifications pour doveadm
+service aggregator {
+ fifo_listener replication-notify-fifo {
+       user = dovecot
+       group = users
+       mode = 0660
+    }
+    unix_listener replication-notify {
+       user = dovecot
+    }
+}
+
+# Configure le service de réplication
+service replicator {
+    process_min_avail = 1
+    unix_listener replicator-doveadm {
+       mode = 0666
+    }
+}
+
+# Configure le serveur distant
+plugin {
+  mail_replica = tcp:{{ groups.mail| difference([inventory_hostname]) |join(';') }}:4321
+}
