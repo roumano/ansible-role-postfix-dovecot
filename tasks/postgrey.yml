@@ -9,4 +9,5 @@
   copy:
     src: postgrey-default
     dest: /etc/default/postgrey
+    mode: 0644
   notify: restart postgrey

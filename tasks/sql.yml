@@ -3,6 +3,8 @@
   copy:
     src: schema.sql
     dest: /tmp
+    mode: 0640
+
 - name: import database schema.sql
   mysql_db:
     name: "{{ postfix_dovecot_mysql_db_name }}"

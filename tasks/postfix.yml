@@ -70,6 +70,7 @@
   copy:
     src: postfix_helo_access
     dest: /etc/postfix/helo_access
+    mode: 0644
   notify:
   - POSTFIX | postmap /etc/postfix/helo_access (generate /etc/postfix/helo_access.db)
   - restart postfix
@@ -78,6 +79,7 @@
   copy:
     src: postgrey-rbl_override
     dest: /etc/postfix/rbl_override
+    mode: 0644
   notify:
   - POSTFIX | postmap /etc/postfix/rbl_override (generate /etc/postfix/rbl_override.db)
   - restart postfix

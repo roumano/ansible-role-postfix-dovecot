@@ -46,6 +46,7 @@
     state: directory
     owner: '{{ dovecot_user.name }}'
     group: '{{ dovecot_user.group }}'
+    mode: 0660
 
 - name: DOVECOT | configure (dovecot.conf)
   template:
