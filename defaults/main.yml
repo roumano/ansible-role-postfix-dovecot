@@ -79,5 +79,3 @@ postfix_smtpd_sender_restrictions:
 - 'reject_unknown_sender_domain'
 - 'reject_unknown_reverse_client_hostname'
 - 'reject_unknown_client_hostname'
-
-
