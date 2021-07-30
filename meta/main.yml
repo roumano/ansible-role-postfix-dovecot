@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: postfix_dovecot
   author: Christian IUGA
   description: automates the installation and configuration of Postfix and Dovecot
   license: MIT
