@@ -1,4 +1,6 @@
 ---
+dovecot_file_mode: '0440'
+dovecot_directory_mode: '0440'
 dovecot_user:
   name: vmail
   group: vmail
@@ -24,6 +26,7 @@ dovecot_listen:
 postgrey: true
 # Sql enable by default but can be disabled
 sql: true
+postfix_file_mode: '0640'
 postfix_dovecot_mysql_password_scheme: 'SHA512-CRYPT'
 postfix_dovecot_mysql_host: '127.0.0.1'
 postfix_dovecot_mysql_db_name: 'servermail'

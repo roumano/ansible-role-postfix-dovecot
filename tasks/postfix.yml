@@ -24,7 +24,7 @@
     dest: /etc/postfix/main.cf
     owner: root
     group: root
-    mode: 0644
+    mode: '{{ postfix_file_mode }}'
   notify: restart postfix
 
 - name: POSTFIX | configure (master.cf)
@@ -33,7 +33,7 @@
     dest: /etc/postfix/master.cf
     owner: root
     group: root
-    mode: 0644
+    mode: '{{ postfix_file_mode }}'
   notify: restart postfix
 
 - name: POSTFIX | configure (mysql-virtual-alias-maps.cf)
@@ -42,7 +42,7 @@
     dest: /etc/postfix/mysql-virtual-alias-maps.cf
     owner: postfix
     group: root
-    mode: 0660
+    mode: '{{ postfix_file_mode }}'
   when: sql | bool
   notify: restart postfix
 
@@ -52,7 +52,7 @@
     dest: /etc/postfix/mysql-virtual-mailbox-domains.cf
     owner: postfix
     group: root
-    mode: 0660
+    mode: '{{ postfix_file_mode }}'
   when: sql | bool
   notify: restart postfix
 
@@ -62,7 +62,7 @@
     dest: /etc/postfix/mysql-virtual-mailbox-maps.cf
     owner: postfix
     group: root
-    mode: 0660
+    mode: '{{ postfix_file_mode }}'
   when: sql | bool
   notify: restart postfix
 
@@ -72,7 +72,7 @@
     dest: /etc/postfix/client_checks
     owner: root
     group: root
-    mode: 0660
+    mode: '{{ postfix_file_mode }}'
   when: postfix_check_client_access is defined
   notify:
   - POSTFIX | postmap /etc/postfix/client_checks
@@ -82,7 +82,7 @@
   copy:
     src: postfix_helo_access
     dest: /etc/postfix/helo_access
-    mode: 0644
+    mode: '{{ postfix_file_mode }}'
   notify:
   - POSTFIX | postmap /etc/postfix/helo_access (generate /etc/postfix/helo_access.db)
   - restart postfix
@@ -91,7 +91,7 @@
   copy:
     src: postgrey-rbl_override
     dest: /etc/postfix/rbl_override
-    mode: 0644
+    mode: '{{ postfix_file_mode }}'
   notify:
   - POSTFIX | postmap /etc/postfix/rbl_override (generate /etc/postfix/rbl_override.db)
   - restart postfix
@@ -112,7 +112,7 @@
     dest: "{{ postfix_relocated_maps.dest }}"
     owner: root
     group: root
-    mode: 0644
+    mode: '{{ postfix_file_mode }}'
   notify: restart postfix
   when: postfix_relocated_maps is defined
 
@@ -122,7 +122,7 @@
     dest: "{{ item.dest }}"
     owner: root
     group: root
-    mode: 0644
+    mode: '{{ postfix_file_mode }}'
   notify:
   - POSTFIX | postalias
   - restart postfix
@@ -135,7 +135,7 @@
     dest: "{{ postfix_transport_maps.dest }}"
     owner: root
     group: root
-    mode: 0644
+    mode: '{{ postfix_file_mode }}'
   notify: POSTFIX | postmap
   when: postfix_transport_maps is defined
 
@@ -145,6 +145,6 @@
     dest: "{{ postfix_local_recipient_maps.dest }}"
     owner: root
     group: root
-    mode: 0644
+    mode: '{{ postfix_file_mode }}'
   notify: restart postfix
   when: postfix_local_recipient_maps is defined

@@ -13,7 +13,7 @@
     dest: /etc/dovecot/conf.d/90-sieve.conf
     owner: '{{ dovecot_user.name }}'
     group: dovecot
-    mode: 0440
+    mode: '{{ dovecot_file_mode }}'
   notify: restart dovecot
 
 - name: DOVECOT | configure (20-managesieve)
@@ -22,7 +22,7 @@
     dest: /etc/dovecot/conf.d/20-managesieve.conf
     owner: '{{ dovecot_user.name }}'
     group: dovecot
-    mode: 0440
+    mode: '{{ dovecot_file_mode }}'
   notify: restart dovecot
 
 - name: DOVECOT | set permissions and ownership for custom sieve
