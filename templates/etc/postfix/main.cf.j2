@@ -26,10 +26,18 @@ smtp_tls_session_cache_database =
 
 smtpd_relay_restrictions = {{ postfix_smtpd_relay_restrictions | join(', ') }}
 myhostname = {{ postfix_myhostname | default(ansible_fqdn) }}
-{% if postfix_alias is defined %}
-alias_maps = hash:/etc/aliases, {{ postfix_alias.type }}:{{ postfix_alias.dest }}
+{% if postfix_alias_maps is defined %}
+alias_maps = {% for entry in postfix_alias_maps %}{{ entry.type }}:{{ entry.dest }}{{ ", " if not loop.last else "" }}{%   endfor %}
 {% else %}
 alias_maps = hash:/etc/aliases
+{% endif %}
+
+{% if postfix_virtual_alias_maps is defined %}
+virtual_alias_maps = {% for entry in postfix_virtual_alias_maps %}{{ entry.type }}:{{ entry.dest }}{{ ", " if not loop.last else "" }}{%   endfor %}
+{% endif %}
+
+{% if postfix_transport_maps is defined %}
+transport_maps = {{ postfix_transport_maps.type }}:{{ postfix_transport_maps.dest }}
 {% endif %}
 
 alias_database = hash:/etc/aliases

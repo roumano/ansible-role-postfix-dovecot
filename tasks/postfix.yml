@@ -66,6 +66,18 @@
   when: sql | bool
   notify: restart postfix
 
+- name: POSTFIX | configure host permission
+  template:
+    src: etc/postfix/client_checks.j2
+    dest: /etc/postfix/client_checks
+    owner: root
+    group: root
+    mode: 0660
+  when: postfix_check_client_access is defined
+  notify:
+  - POSTFIX | postmap /etc/postfix/client_checks
+  - reload postfix
+
 - name: POSTFIX | configure (helo_access)
   copy:
     src: postfix_helo_access
@@ -96,7 +108,7 @@
 
 - name: POSTFIX | set relocated_maps
   copy:
-    content: "{{ postfix_relocated_maps.data + '\n' }}"
+    content: "{{ postfix_relocated_maps.data }}"
     dest: "{{ postfix_relocated_maps.dest }}"
     owner: root
     group: root
@@ -106,13 +118,26 @@
 
 - name: POSTFIX | set aliases_maps
   copy:
-    content: "{{ postfix_alias.data + '\n' }}"
-    dest: "{{ postfix_alias.dest }}"
+    content: "{{ item.data }}"
+    dest: "{{ item.dest }}"
     owner: root
     group: root
     mode: 0644
-  notify: restart postfix
-  when: postfix_alias is defined
+  notify:
+  - POSTFIX | postalias
+  - restart postfix
+  when: postfix_virtual_alias_maps is defined or postfix_alias_maps is defined
+  loop: "{{ postfix_virtual_alias_maps + postfix_alias_maps }}"
+
+- name: POSTFIX | set transport_maps
+  copy:
+    content: "{{ postfix_transport_maps.data }}"
+    dest: "{{ postfix_transport_maps.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: POSTFIX | postmap
+  when: postfix_transport_maps is defined
 
 - name: POSTFIX | set postfix_local_recipient_maps
   copy:

@@ -34,7 +34,8 @@ This defaults to `permit_mynetworks`, `permit_sasl_authenticated`, and `defer_un
 This defaults to `127.0.0.0/8`, `[::ffff:127.0.0.0]/104`, `[::1]/128`.
 * **postfix_mydestination** - a list for the Postfix configuration value of `mydestination`. For information on visit the [Postfix documentation](http://www.postfix.org/postconf.5.html#mydestination).
 This defaults to `localhost`.
-* **postfix_alias** - define another alias lookup for user
+* **postfix_alias_maps** - define another alias lookup for user
+* **postfix_transport_maps** - define transport maps (routing table)
 * **postfix_mysql_alias_query** - the query used to find the destination of an alias when the source is supplied. This defaults to `SELECT destination FROM virtual_aliases WHERE source='%s';`.
 * **postfix_mysql_domains_query** - the query used to determine if a domain is valid. This defaults to `SELECT 1 FROM virtual_domains WHERE name='%s';`.
 * **postfix_mysql_users_query** - the query used to determine if an email address is valid. This defaults to `SELECT 1 FROM virtual_users WHERE email='%s';`.
