@@ -16,6 +16,7 @@ it must be concatenated after the certificate in the same file.
 #### Optional Variables
 * **solr** - [true/false], default is false, enable Solr backend for indexing mail's content
 * **sql** - [true/false], default is true, disable mysql backend
+* **postfix_tls** - [true/false], default is false, enable smtps (smtp over ssl, port 465)
 * **postfix_dovecot_mysql_host** - the FQDN or IP address to the MySQL server for authentication. This defaults to `127.0.0.1`.
 * **postfix_mydomain** - Define mydomain in postfix configuration
 * **postfix_dovecot_mysql_db_name** - the database name on the MySQL server used for authentication. This defaults to `servermail`.
