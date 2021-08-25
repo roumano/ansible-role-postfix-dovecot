@@ -1,4 +1,12 @@
 ---
+- name: POSTFIX | postalias
+  command: postalias {{ item.dest }}
+  loop: "{{ postfix_virtual_alias_maps + postfix_alias_maps }}"
+  when: item.type == "hash"
+
+- name: POSTFIX | postmap
+  command: postmap {{ postfix_transport_maps.dest }}
+
 - name: POSTFIX | postmap /etc/postfix/helo_access (generate /etc/postfix/helo_access.db)
   command: postmap /etc/postfix/helo_access
   notify: restart postfix
@@ -6,6 +14,10 @@
 - name: POSTFIX | postmap /etc/postfix/rbl_override (generate /etc/postfix/rbl_override.db)
   command: postmap /etc/postfix/rbl_override
   notify: restart postfix
+
+- name: POSTFIX | postmap /etc/postfix/client_checks
+  command: postmap /etc/postfix/client_checks
+  notify: reload postfix
 
 - name: restart dovecot
   service:
@@ -16,6 +28,11 @@
   service:
     name: postfix
     state: restarted
+
+- name: reload postfix
+  service:
+    name: postfix
+    state: reloaded
 
 - name: restart postgrey
   service:
