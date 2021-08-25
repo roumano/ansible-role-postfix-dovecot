@@ -1,7 +1,7 @@
 {#  http://www.postfix.org/access.5.html #}
 {# Format of file : 172.26.15.246/32  [PERMIT/REJECT] [Optional reject information] #}
 {%- for host in postfix_check_client_access -%}
-  {{- host.ip }}
+  {{- "%-18s"|format(host.ip) }}
   {%- if host.permission is defined %}    {{ host.permission }}{% else %}    PERMIT{%endif %}
   {%- if host.text is defined %} {{ host.text }}{%endif %}
   {%- if host.name is defined %} # {{ host.name }}{%endif %}
