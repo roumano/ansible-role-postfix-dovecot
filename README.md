@@ -37,6 +37,7 @@ This defaults to `127.0.0.0/8`, `[::ffff:127.0.0.0]/104`, `[::1]/128`.
 This defaults to `localhost`.
 * **postfix_alias_maps** - define another alias lookup for user
 * **postfix_transport_maps** - define transport maps (routing table)
+* **postfix_sender_maps** - define sender maps (to permit and control Impersonate)
 * **postfix_mysql_alias_query** - the query used to find the destination of an alias when the source is supplied. This defaults to `SELECT destination FROM virtual_aliases WHERE source='%s';`.
 * **postfix_mysql_domains_query** - the query used to determine if a domain is valid. This defaults to `SELECT 1 FROM virtual_domains WHERE name='%s';`.
 * **postfix_mysql_users_query** - the query used to determine if an email address is valid. This defaults to `SELECT 1 FROM virtual_users WHERE email='%s';`.
@@ -113,7 +114,6 @@ _site.yml_
     - name: fts_solr
       value: url=http://localhost:8080/solr/ debug
     solr: true
-
 ```
 
 
@@ -121,3 +121,8 @@ _site.yml_
 $ ansible-galaxy install -r requirements.yml
 $ ansible-playbook -i inventory site.yml --ask-become-pass
 ```
+
+* To enable and control Impersonate:
+  * Define one (or more) postfix_sender_maps table to map uid with mail permission
+  * Add reject_sender_login_mismatch in postfix_smtpd_recipient_restrictions (or in other postfix_smtpd_*_restrictions
+  * Can be tested via `postmap  -q mail_address database_type:file_path`

@@ -27,7 +27,7 @@ smtp_tls_session_cache_database =
 smtpd_relay_restrictions = {{ postfix_smtpd_relay_restrictions | join(', ') }}
 myhostname = {{ postfix_myhostname | default(ansible_fqdn) }}
 {% if postfix_alias_maps is defined %}
-alias_maps = {% for entry in postfix_alias_maps %}{{ entry.type }}:{{ entry.dest }}{{ ", " if not loop.last else "" }}{%   endfor %}
+alias_maps = {% for entry in postfix_alias_maps %}{{ entry.type }}:{{ entry.dest }}{{ ", " if not loop.last else "" }}{% endfor %}
 {% else %}
 alias_maps = hash:/etc/aliases
 {% endif %}
@@ -96,4 +96,7 @@ mailbox_command = {{ postfix_mailbox_command }}
 {% endif %}
 {% if postfix_local_recipient_maps is defined %}
 local_recipient_maps = {{ postfix_local_recipient_maps.type }}:{{ postfix_local_recipient_maps.dest }}
+{% endif %}
+{% if postfix_sender_maps is defined %}
+smtpd_sender_login_maps = {% for entry in postfix_sender_maps %}{{ entry.type }}:{{ entry.dest }}{{ ", " if not loop.last else "" }}{% endfor %}
 {% endif %}

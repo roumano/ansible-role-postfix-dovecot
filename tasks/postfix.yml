@@ -25,7 +25,9 @@
     owner: root
     group: root
     mode: '{{ postfix_file_mode }}'
-  notify: restart postfix
+  notify:
+  - check postfix
+  - restart postfix
 
 - name: POSTFIX | configure (master.cf)
   template:
@@ -34,7 +36,9 @@
     owner: root
     group: root
     mode: '{{ postfix_file_mode }}'
-  notify: restart postfix
+  notify:
+  - check postfix
+  - restart postfix
 
 - name: POSTFIX | configure (mysql-virtual-alias-maps.cf)
   template:
@@ -44,7 +48,9 @@
     group: root
     mode: '{{ postfix_file_mode }}'
   when: sql | bool
-  notify: restart postfix
+  notify:
+  - check postfix
+  - restart postfix
 
 - name: POSTFIX | configure (mysql-virtual-mailbox-domains.cf)
   template:
@@ -54,7 +60,9 @@
     group: root
     mode: '{{ postfix_file_mode }}'
   when: sql | bool
-  notify: restart postfix
+  notify:
+  - check postfix
+  - restart postfix
 
 - name: POSTFIX | configure (mysql-virtual-mailbox-maps.cf)
   template:
@@ -64,7 +72,9 @@
     group: root
     mode: '{{ postfix_file_mode }}'
   when: sql | bool
-  notify: restart postfix
+  notify:
+  - check postfix
+  - restart postfix
 
 - name: POSTFIX | configure host permission
   template:
@@ -85,6 +95,7 @@
     mode: '{{ postfix_file_mode }}'
   notify:
   - POSTFIX | postmap /etc/postfix/helo_access (generate /etc/postfix/helo_access.db)
+  - check postfix
   - restart postfix
 
 - name: POSTFIX | Create A Whitelist rbl (/etc/postfix/rbl_override)
@@ -94,6 +105,7 @@
     mode: '{{ postfix_file_mode }}'
   notify:
   - POSTFIX | postmap /etc/postfix/rbl_override (generate /etc/postfix/rbl_override.db)
+  - check postfix
   - restart postfix
 
 - name: POSTFIX | set the default domain name to be used (/etc/mailname)
@@ -103,7 +115,9 @@
     owner: root
     group: root
     mode: 0644
-  notify: restart postfix
+  notify:
+  - check postfix
+  - restart postfix
   when: postfix_default_domain is defined
 
 - name: POSTFIX | set relocated_maps
@@ -113,7 +127,9 @@
     owner: root
     group: root
     mode: '{{ postfix_file_mode }}'
-  notify: restart postfix
+  notify:
+  - check postfix
+  - restart postfix
   when: postfix_relocated_maps is defined
 
 - name: POSTFIX | set aliases_maps
@@ -125,9 +141,10 @@
     mode: '{{ postfix_file_mode }}'
   notify:
   - POSTFIX | postalias
+  - check postfix
   - restart postfix
-  when: postfix_virtual_alias_maps is defined or postfix_alias_maps is defined
-  loop: "{{ postfix_virtual_alias_maps + postfix_alias_maps }}"
+  when: postfix_virtual_alias_maps is defined or postfix_alias_maps is defined or postfix_sender_maps is defined
+  loop: "{{ postfix_virtual_alias_maps + postfix_alias_maps + postfix_sender_maps }}"
 
 - name: POSTFIX | set transport_maps
   copy:
@@ -146,5 +163,7 @@
     owner: root
     group: root
     mode: '{{ postfix_file_mode }}'
-  notify: restart postfix
+  notify:
+  - check postfix
+  - restart postfix
   when: postfix_local_recipient_maps is defined
